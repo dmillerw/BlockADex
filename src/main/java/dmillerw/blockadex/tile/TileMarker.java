@@ -1,6 +1,7 @@
 package dmillerw.blockadex.tile;
 
 import com.google.common.collect.Sets;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -17,7 +18,7 @@ public class TileMarker extends TileCore {
 
     private boolean registered = false;
 
-    private void register() {
+    public void register() {
         if (registered)
             return;
 
@@ -42,8 +43,20 @@ public class TileMarker extends TileCore {
     @Override
     public void updateEntity() {
         if (!worldObj.isRemote) {
-            if (!registered)
+            if (worldObj.getTotalWorldTime() % 10 != 0)
+                return;
+
+            int dx = xCoord + forgeDirection.offsetX;
+            int dy = yCoord + forgeDirection.offsetY;
+            int dz = zCoord + forgeDirection.offsetZ;
+
+            Block block = worldObj.getBlock(dx, dy, dz);
+
+            if (block != null && !block.isAir(worldObj, dx, dy, dz)) {
                 register();
+            } else {
+                unregister();
+            }
         }
     }
 

@@ -25,16 +25,18 @@ public class PacketUpdateMarkerRegistry implements IMessage, IMessageHandler<Pac
     public static void sendRegistry(EntityPlayerMP entityPlayerMP) {
         PacketUpdateMarkerRegistry packetUpdateMarkerRegistry = new PacketUpdateMarkerRegistry();
         for (TileMarker tileMarker : TileMarker.tileRegistry) {
+            if (tileMarker == null)
+                continue;
+
             if (tileMarker.forgeDirection == ForgeDirection.UNKNOWN)
                 continue;
 
-            Block block = tileMarker.getWorldObj().getBlock(tileMarker.xCoord + tileMarker.forgeDirection.offsetX,
-                                                            tileMarker.yCoord + tileMarker.forgeDirection.offsetY,
-                                                            tileMarker.zCoord + tileMarker.forgeDirection.offsetZ);
+            int dx = tileMarker.xCoord + tileMarker.forgeDirection.offsetX;
+            int dy = tileMarker.yCoord + tileMarker.forgeDirection.offsetY;
+            int dz = tileMarker.zCoord + tileMarker.forgeDirection.offsetZ;
 
-            int meta = tileMarker.getWorldObj().getBlockMetadata(tileMarker.xCoord + tileMarker.forgeDirection.offsetX,
-                                                                 tileMarker.yCoord + tileMarker.forgeDirection.offsetY,
-                                                                 tileMarker.zCoord + tileMarker.forgeDirection.offsetZ);
+            Block block = tileMarker.getWorldObj().getBlock(dx, dy, dz);
+            int meta = tileMarker.getWorldObj().getBlockMetadata(dx, dy, dz);
 
             if (block == null)
                 continue;
@@ -42,13 +44,10 @@ public class PacketUpdateMarkerRegistry implements IMessage, IMessageHandler<Pac
             // TODO Better icon handling
             ItemStack icon = new ItemStack(block, 1, meta);
 
-            packetUpdateMarkerRegistry.blockIndexDataList.add(
-                    new BlockIndexData(tileMarker.xCoord + tileMarker.forgeDirection.offsetX,
-                    tileMarker.yCoord + tileMarker.forgeDirection.offsetY,
-                    tileMarker.zCoord + tileMarker.forgeDirection.offsetZ,
-                    "",
-                    icon)
-            );
+            if (icon.getItem() == null)
+                continue;
+
+            packetUpdateMarkerRegistry.blockIndexDataList.add(new BlockIndexData(dx, dy, dz, "", icon));
         }
         PacketHandler.INSTANCE.sendTo(packetUpdateMarkerRegistry, entityPlayerMP);
     }
@@ -61,7 +60,9 @@ public class PacketUpdateMarkerRegistry implements IMessage, IMessageHandler<Pac
         for (BlockIndexData blockIndexData : blockIndexDataList) {
             try {
                 blockIndexData.toBytes(buf);
-            } catch (IOException e) {}
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -71,7 +72,9 @@ public class PacketUpdateMarkerRegistry implements IMessage, IMessageHandler<Pac
         for (int i=0; i<size; i++) {
             try {
                 blockIndexDataList.add(BlockIndexData.fromBuffer(buf));
-            } catch (IOException e) {}
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

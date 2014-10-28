@@ -8,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
@@ -16,9 +18,11 @@ import java.util.List;
  */
 public class GuiBlockADex extends GuiContainer {
 
-    public static List<BlockIndexData> clientIndexData = Lists.newArrayList();
+    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation("blockadex:textures/gui/blockadex.png");
 
     private static final RenderItem renderItem = new RenderItem();
+
+    public static List<BlockIndexData> clientIndexData = Lists.newArrayList();
 
     public GuiBlockADex() {
         super(new ContainerNull());
@@ -26,7 +30,9 @@ public class GuiBlockADex extends GuiContainer {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partial, int mouseX, int mouseY) {
-
+        GL11.glColor4f(1, 1, 1, 1);
+        Minecraft.getMinecraft().renderEngine.bindTexture(GUI_TEXTURE);
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
     @Override
@@ -35,9 +41,23 @@ public class GuiBlockADex extends GuiContainer {
 
         RenderHelper.enableGUIStandardItemLighting();
 
-        for (int i=0; i<clientIndexData.size(); i++) {
-            renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), clientIndexData.get(i).icon, 5 + (20 * i), 5);
+        GL11.glPushMatrix();
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+
+        for (int i=0; i<8; i++) {
+            if (i >= clientIndexData.size())
+                break;
+
+            BlockIndexData blockIndexData = clientIndexData.get(i);
+
+            int y = 17 + (18 * i);
+            int x = 8;
+            renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), blockIndexData.icon, x, y);
+            mc.fontRenderer.drawString(blockIndexData.icon.getDisplayName(), x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
         }
+
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glPopMatrix();
 
         RenderHelper.disableStandardItemLighting();
     }
@@ -49,13 +69,16 @@ public class GuiBlockADex extends GuiContainer {
         mouseX -= guiLeft;
         mouseY -= guiTop;
 
-        for (int i=0; i<clientIndexData.size(); i++) {
-            int x1 = 5 + (20 * i);
-            int y1 = 5;
-            int x2 = x1 + 20;
-            int y2 = y1 + 20;
+        for (int i=0; i<8; i++) {
+            if (i >= clientIndexData.size())
+                break;
 
-            if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) {
+            BlockIndexData blockIndexData = clientIndexData.get(i);
+
+            int y = 17 + (18 * i);
+            int x = 8;
+
+            if (mouseX >= x && mouseX <= x + 160 && mouseY >= y && mouseY <= y + 18) {
                 BlockBlockADex.activateBlock(mc.thePlayer, i);
                 return;
             }
