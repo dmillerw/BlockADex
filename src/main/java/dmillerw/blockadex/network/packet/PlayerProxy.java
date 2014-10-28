@@ -28,7 +28,7 @@ public class PlayerProxy implements MethodInterceptor {
         Enhancer enhancer = new Enhancer();
         enhancer.setCallback(playerProxy);
         enhancer.setSuperclass(entityPlayerMP.getClass());
-        enhancer.setInterceptDuringConstruction(true);
+//        enhancer.setInterceptDuringConstruction(true);
 
         Class<?>[] argTypes = new Class[]{MinecraftServer.class, WorldServer.class, GameProfile.class, ItemInWorldManager.class};
         Object[] args = new Object[]{entityPlayerMP.mcServer, entityPlayerMP.worldObj, entityPlayerMP.getGameProfile(), entityPlayerMP.theItemInWorldManager};

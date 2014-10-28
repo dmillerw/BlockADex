@@ -1,5 +1,6 @@
 package dmillerw.blockadex.network.packet;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -34,8 +35,7 @@ public class PacketOpenRemoteGui implements IMessage, IMessageHandler<PacketOpen
     public IMessage onMessage(PacketOpenRemoteGui message, MessageContext ctx) {
         EntityPlayerMP entityPlayerMP = (EntityPlayerMP) ctx.getServerHandler().playerEntity;
         Container container = entityPlayerMP.openContainer;
-        PlayerProxy playerProxy = new PlayerProxy(entityPlayerMP, message.x, message.y, message.z);
-        EntityPlayerMP proxyPlayer = PlayerProxy.createPlayerProxy(entityPlayerMP, playerProxy);
+        ProxiedPlayer proxyPlayer = new ProxiedPlayer(entityPlayerMP);
 
         proxyPlayer.playerNetServerHandler = entityPlayerMP.playerNetServerHandler;
         proxyPlayer.inventory = entityPlayerMP.inventory;
