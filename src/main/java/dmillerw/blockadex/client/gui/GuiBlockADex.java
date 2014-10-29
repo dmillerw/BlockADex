@@ -39,10 +39,13 @@ public class GuiBlockADex extends GuiContainer {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         Minecraft mc = Minecraft.getMinecraft();
 
-        RenderHelper.enableGUIStandardItemLighting();
+        mouseX -= guiLeft;
+        mouseY -= guiTop;
 
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_DEPTH_TEST);
+
+        RenderHelper.enableGUIStandardItemLighting();
 
         for (int i=0; i<8; i++) {
             if (i >= clientIndexData.size())
@@ -52,14 +55,21 @@ public class GuiBlockADex extends GuiContainer {
 
             int y = 17 + (18 * i);
             int x = 8;
+
+            if (mouseX >= x && mouseX <= x + 160 && mouseY >= y && mouseY <= y + 16) {
+                GL11.glColorMask(true, true, true, false);
+                this.drawGradientRect(x, y, x + 160, y + 16, -2130706433, -2130706433);
+                GL11.glColorMask(true, true, true, true);
+            }
+
             renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), blockIndexData.icon, x, y);
-            mc.fontRenderer.drawString(blockIndexData.icon.getDisplayName(), x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
+            mc.fontRenderer.drawStringWithShadow(blockIndexData.icon.getDisplayName(), x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
         }
+
+        RenderHelper.disableStandardItemLighting();
 
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
-
-        RenderHelper.disableStandardItemLighting();
     }
 
     @Override
@@ -72,8 +82,6 @@ public class GuiBlockADex extends GuiContainer {
         for (int i=0; i<8; i++) {
             if (i >= clientIndexData.size())
                 break;
-
-            BlockIndexData blockIndexData = clientIndexData.get(i);
 
             int y = 17 + (18 * i);
             int x = 8;

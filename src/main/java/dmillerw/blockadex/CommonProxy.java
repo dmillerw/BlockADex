@@ -6,10 +6,12 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import dmillerw.blockadex.block.BlockBlockADex;
 import dmillerw.blockadex.block.BlockMarker;
 import dmillerw.blockadex.block.ItemBlockMarker;
+import dmillerw.blockadex.handler.ContainerHandler;
 import dmillerw.blockadex.handler.GuiHandler;
 import dmillerw.blockadex.network.PacketHandler;
 import dmillerw.blockadex.tile.TileBlockADex;
 import dmillerw.blockadex.tile.TileMarker;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * @author dmillerw
@@ -27,5 +29,7 @@ public class CommonProxy {
         PacketHandler.initialize();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(BlockADex.instance, new GuiHandler());
+
+        MinecraftForge.EVENT_BUS.register(ContainerHandler.INSTANCE);
     }
 }

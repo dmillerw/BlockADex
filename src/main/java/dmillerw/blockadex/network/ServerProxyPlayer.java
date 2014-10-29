@@ -1,4 +1,4 @@
-package dmillerw.blockadex.network.packet;
+package dmillerw.blockadex.network;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -7,11 +7,11 @@ import net.minecraft.world.WorldServer;
 /**
  * @author dmillerw
  */
-public class ProxiedPlayer extends EntityPlayerMP {
+public class ServerProxyPlayer extends EntityPlayerMP {
 
     private EntityPlayerMP parentPlayer;
 
-    public ProxiedPlayer(EntityPlayerMP parentPlayer) {
+    public ServerProxyPlayer(EntityPlayerMP parentPlayer) {
         super(parentPlayer.mcServer, (WorldServer) parentPlayer.worldObj, parentPlayer.getGameProfile(), parentPlayer.theItemInWorldManager);
         this.parentPlayer = parentPlayer;
     }
