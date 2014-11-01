@@ -8,6 +8,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 
 @Mod(modid = "BlockADex", name = "BlockADex", version="%MOD_VERSION%")
 public class BlockADex {
@@ -19,7 +20,8 @@ public class BlockADex {
     public static CommonProxy proxy;
 
     public static Block blockADex;
-    public static Block marker;
+
+    public static Item chip;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {

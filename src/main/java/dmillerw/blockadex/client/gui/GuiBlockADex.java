@@ -1,17 +1,19 @@
 package dmillerw.blockadex.client.gui;
 
-import com.google.common.collect.Lists;
 import dmillerw.blockadex.block.BlockBlockADex;
-import dmillerw.blockadex.inventory.ContainerNull;
+import dmillerw.blockadex.inventory.ContainerBlockADex;
 import dmillerw.blockadex.lib.BlockIndexData;
+import dmillerw.blockadex.network.PacketHandler;
+import dmillerw.blockadex.network.packet.PacketOpenGUI;
+import dmillerw.blockadex.tile.TileBlockADex;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-
-import java.util.List;
 
 /**
  * @author dmillerw
@@ -22,10 +24,14 @@ public class GuiBlockADex extends GuiContainer {
 
     private static final RenderItem renderItem = new RenderItem();
 
-    public static List<BlockIndexData> clientIndexData = Lists.newArrayList();
+    private final EntityPlayer entityPlayer;
+    private final TileBlockADex tileBlockADex;
 
-    public GuiBlockADex() {
-        super(new ContainerNull());
+    public GuiBlockADex(EntityPlayer entityPlayer, TileBlockADex tileBlockADex) {
+        super(new ContainerBlockADex(entityPlayer, tileBlockADex));
+
+        this.entityPlayer = entityPlayer;
+        this.tileBlockADex = tileBlockADex;
     }
 
     @Override
@@ -48,10 +54,7 @@ public class GuiBlockADex extends GuiContainer {
         RenderHelper.enableGUIStandardItemLighting();
 
         for (int i=0; i<8; i++) {
-            if (i >= clientIndexData.size())
-                break;
-
-            BlockIndexData blockIndexData = clientIndexData.get(i);
+            BlockIndexData blockIndexData = ((ContainerBlockADex)inventorySlots).blockDataCache[i];
 
             int y = 17 + (18 * i);
             int x = 8;
@@ -62,8 +65,20 @@ public class GuiBlockADex extends GuiContainer {
                 GL11.glColorMask(true, true, true, true);
             }
 
-            renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), blockIndexData.icon, x, y);
-            mc.fontRenderer.drawStringWithShadow(blockIndexData.icon.getDisplayName(), x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
+            if (blockIndexData != null) {
+                renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), blockIndexData.icon, x, y);
+                if (blockIndexData.dimension == entityPlayer.worldObj.provider.dimensionId) {
+                    if (blockIndexData.icon != null) {
+                        mc.fontRenderer.drawStringWithShadow(blockIndexData.icon.getDisplayName(), x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
+                    } else {
+                        mc.fontRenderer.drawStringWithShadow("INVALID", x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xAA0000);
+                    }
+                } else {
+                    mc.fontRenderer.drawStringWithShadow("IN OTHER DIMENSION", x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xAA0000);
+                }
+            } else {
+                mc.fontRenderer.drawStringWithShadow("CLICK TO ADD", x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
+            }
         }
 
         RenderHelper.disableStandardItemLighting();
@@ -80,14 +95,21 @@ public class GuiBlockADex extends GuiContainer {
         mouseY -= guiTop;
 
         for (int i=0; i<8; i++) {
-            if (i >= clientIndexData.size())
-                break;
-
+            BlockIndexData blockIndexData = ((ContainerBlockADex)inventorySlots).blockDataCache[i];
             int y = 17 + (18 * i);
             int x = 8;
 
             if (mouseX >= x && mouseX <= x + 160 && mouseY >= y && mouseY <= y + 18) {
-                BlockBlockADex.activateBlock(mc.thePlayer, i);
+                if (button == 0 && !GuiScreen.isShiftKeyDown() && blockIndexData != null) {
+                    BlockBlockADex.activateBlock(mc.thePlayer, blockIndexData);
+                } else {
+                    PacketOpenGUI packetOpenGUI = new PacketOpenGUI();
+                    packetOpenGUI.x = tileBlockADex.xCoord;
+                    packetOpenGUI.y = tileBlockADex.yCoord;
+                    packetOpenGUI.z = tileBlockADex.zCoord;
+                    packetOpenGUI.id = 10 + i;
+                    PacketHandler.INSTANCE.sendToServer(packetOpenGUI);
+                }
                 return;
             }
         }

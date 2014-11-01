@@ -13,7 +13,7 @@ import net.minecraft.inventory.Container;
 /**
  * @author dmillerw
  */
-public class PacketOpenRemoteGui implements IMessage, IMessageHandler<PacketOpenRemoteGui, IMessage> {
+public class PacketOpenRemoteGUI implements IMessage, IMessageHandler<PacketOpenRemoteGUI, IMessage> {
 
     public int x;
     public int y;
@@ -34,7 +34,7 @@ public class PacketOpenRemoteGui implements IMessage, IMessageHandler<PacketOpen
     }
 
     @Override
-    public IMessage onMessage(PacketOpenRemoteGui message, MessageContext ctx) {
+    public IMessage onMessage(PacketOpenRemoteGUI message, MessageContext ctx) {
         EntityPlayerMP entityPlayerMP = ctx.getServerHandler().playerEntity;
         Container container = entityPlayerMP.openContainer;
         ServerProxyPlayer proxyPlayer = new ServerProxyPlayer(entityPlayerMP);
