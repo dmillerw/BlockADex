@@ -20,9 +20,8 @@ public class BlockIndexData {
         int y = packetBuffer.readInt();
         int z = packetBuffer.readInt();
         int dimension = packetBuffer.readInt();
-        String name = packetBuffer.readStringFromBuffer(255);
         ItemStack icon = packetBuffer.readItemStackFromBuffer();
-        return new BlockIndexData(x, y, z, dimension, name, icon);
+        return new BlockIndexData(x, y, z, dimension, icon);
     }
 
     public static BlockIndexData fromNBT(NBTTagCompound nbtTagCompound) {
@@ -30,9 +29,8 @@ public class BlockIndexData {
         int y = nbtTagCompound.getInteger("y");
         int z = nbtTagCompound.getInteger("z");
         int dimension = nbtTagCompound.getInteger("dimension");
-        String name = nbtTagCompound.getString("name");
         ItemStack icon = ItemStack.loadItemStackFromNBT(nbtTagCompound.getCompoundTag("icon"));
-        return new BlockIndexData(x, y, z, dimension, name, icon);
+        return new BlockIndexData(x, y, z, dimension, icon);
     }
 
     public final int x;
@@ -40,20 +38,19 @@ public class BlockIndexData {
     public final int z;
     public final int dimension;
 
-    public final String name;
+    public String name;
 
     public final ItemStack icon;
 
-    public BlockIndexData(World world, int x, int y, int z, String name, ItemStack icon) {
-        this(x, y, z, world.provider.dimensionId, name, icon);
+    public BlockIndexData(World world, int x, int y, int z, ItemStack icon) {
+        this(x, y, z, world.provider.dimensionId, icon);
     }
 
-    public BlockIndexData(int x, int y, int z, int dimension, String name, ItemStack icon) {
+    public BlockIndexData(int x, int y, int z, int dimension, ItemStack icon) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.dimension = dimension;
-        this.name = name;
         this.icon = icon;
     }
 
@@ -63,7 +60,6 @@ public class BlockIndexData {
         packetBuffer.writeInt(y);
         packetBuffer.writeInt(z);
         packetBuffer.writeInt(dimension);
-        packetBuffer.writeStringToBuffer(name);
         packetBuffer.writeItemStackToBuffer(icon);
     }
 
@@ -72,7 +68,6 @@ public class BlockIndexData {
         nbtTagCompound.setInteger("y", y);
         nbtTagCompound.setInteger("z", z);
         nbtTagCompound.setInteger("dimension", dimension);
-        nbtTagCompound.setString("name", name);
         NBTTagCompound iconNBT = new NBTTagCompound();
         icon.writeToNBT(iconNBT);
         nbtTagCompound.setTag("icon", iconNBT);
@@ -85,7 +80,6 @@ public class BlockIndexData {
         toStringHelper.add("y", y);
         toStringHelper.add("z", z);
         toStringHelper.add("dimension", dimension);
-        toStringHelper.add("name", name);
         toStringHelper.add("icon", icon);
         return toStringHelper.toString();
     }

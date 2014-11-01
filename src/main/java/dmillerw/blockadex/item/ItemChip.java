@@ -27,7 +27,7 @@ public class ItemChip extends Item {
         }
 
         if (player.isSneaking()) {
-            BlockIndexData blockIndexData = new BlockIndexData(world, x, y, z, "", new ItemStack(Item.getItemFromBlock(world.getBlock(x, y, z)), 1, world.getBlockMetadata(x, y, z)));
+            BlockIndexData blockIndexData = new BlockIndexData(world, x, y, z, new ItemStack(Item.getItemFromBlock(world.getBlock(x, y, z)), 1, world.getBlockMetadata(x, y, z)));
             NBTTagCompound nbtTagCompound = new NBTTagCompound();
             blockIndexData.toNBT(nbtTagCompound);
             stack.setTagCompound(nbtTagCompound);

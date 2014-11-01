@@ -65,20 +65,30 @@ public class GuiBlockADex extends GuiContainer {
                 GL11.glColorMask(true, true, true, true);
             }
 
+            String s;
+            int color = 0xFFFFFF;
             if (blockIndexData != null) {
                 renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), blockIndexData.icon, x, y);
                 if (blockIndexData.dimension == entityPlayer.worldObj.provider.dimensionId) {
                     if (blockIndexData.icon != null) {
-                        mc.fontRenderer.drawStringWithShadow(blockIndexData.icon.getDisplayName(), x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
+                        if (blockIndexData.name != null && !blockIndexData.name.isEmpty()) {
+                            s = blockIndexData.name;
+                        } else {
+                            s = blockIndexData.icon.getDisplayName();
+                        }
                     } else {
-                        mc.fontRenderer.drawStringWithShadow("INVALID", x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xAA0000);
+                        s = "INVALID";
+                        color = 0xAA0000;
                     }
                 } else {
-                    mc.fontRenderer.drawStringWithShadow("IN OTHER DIMENSION", x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xAA0000);
+                    s = "IN OTHER DIMENSION";
+                    color = 0xAA0000;
                 }
             } else {
-                mc.fontRenderer.drawStringWithShadow("CLICK TO ADD", x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
+                s = "CLICK TO ADD";
             }
+
+            mc.fontRenderer.drawStringWithShadow(s, x + 17, y + 9 - mc.fontRenderer.FONT_HEIGHT / 2, color);
         }
 
         RenderHelper.disableStandardItemLighting();

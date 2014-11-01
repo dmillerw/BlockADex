@@ -46,7 +46,12 @@ public class ContainerBlockADex extends Container {
             ItemStack itemStack = tileBlockADex.internalInventory.getStackInSlot(i);
 
             if (itemStack != null && itemStack.getItem() == BlockADex.chip) {
-                blockDataCache[i] = BlockIndexData.fromNBT(itemStack.getTagCompound());
+                BlockIndexData blockIndexData = BlockIndexData.fromNBT(itemStack.getTagCompound());
+                blockDataCache[i] = blockIndexData;
+
+                if (itemStack.hasDisplayName()) {
+                    blockDataCache[i].name = itemStack.getDisplayName();
+                }
             }
         }
     }
